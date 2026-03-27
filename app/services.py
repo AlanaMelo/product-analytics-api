@@ -38,3 +38,17 @@ def get_daily_active_users(db):
         }
         for row in results
     ]
+
+def events_per_user(db):
+    results = db.query(
+        Event.user_id,
+        func.count(Event.id)
+    ).group_by(Event.user_id).all()
+
+    return [
+        {
+            "user_id": row[0],
+            "event_count": row[1]
+        }
+        for row in results
+    ]

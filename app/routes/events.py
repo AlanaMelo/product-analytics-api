@@ -25,3 +25,7 @@ def list_events(db: Session = Depends(get_db)):
 @router.get("/metrics/dau")
 def daily_active_users(db: Session = Depends(get_db)):
     return crud.get_daily_active_users(db)
+
+@router.get("/metrics/events-per-user")
+def events_per_user_endpoint(db: Session = Depends(get_db)):
+    return crud.events_per_user(db)
