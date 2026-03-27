@@ -2,14 +2,24 @@ from sqlalchemy.orm import Session
 from app import models, schemas
 from sqlalchemy import func
 from app.models import Event
+from sqlalchemy.exc import IntegrityError
+from fastapi import HTTPException
 
 
-def create_user(db: Session, user: schemas.UserCreate):
+def create_user(db, user):
     db_user = models.User(name=user.name, email=user.email)
     db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+
+    try:
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail="Email already exists"
+        )
 
 def create_event(db: Session, event: schemas.EventCreate):
     db_event = models.Event(
