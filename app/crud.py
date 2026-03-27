@@ -1,5 +1,8 @@
 from sqlalchemy.orm import Session
 from app import models, schemas
+from sqlalchemy import func
+from app.models import Event
+
 
 def create_user(db: Session, user: schemas.UserCreate):
     db_user = models.User(name=user.name, email=user.email)
@@ -20,3 +23,18 @@ def create_event(db: Session, event: schemas.EventCreate):
 
 def get_events(db: Session):
     return db.query(models.Event).all()
+
+def get_daily_active_users(db):
+    results = db.query(
+        func.date(Event.timestamp),
+        func.count(Event.user_id.distinct())
+    ).group_by(func.date(Event.timestamp)).all()
+
+    # Converter para JSON
+    return [
+        {
+            "date": str(row[0]),
+            "active_users": row[1]
+        }
+        for row in results
+    ]

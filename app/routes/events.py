@@ -19,3 +19,7 @@ def create_event(event: schemas.EventCreate, db: Session = Depends(get_db)):
 @router.get("/")
 def list_events(db: Session = Depends(get_db)):
     return crud.get_events(db)
+
+@router.get("/metrics/dau")
+def daily_active_users(db: Session = Depends(get_db)):
+    return crud.get_daily_active_users(db)
